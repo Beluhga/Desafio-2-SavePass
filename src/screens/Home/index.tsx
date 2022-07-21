@@ -31,14 +31,42 @@ export function Home() {
   async function loadData() {
     const dataKey = '@savepass:logins';
     // Get asyncStorage data, use setSearchListData and setData
+
+    // salvando as informações em cada estado em formato de string
+    const response = await AsyncStorage.getItem(dataKey);
+      if(response) {
+        const parsedData = JSON.parse(response);
+
+        setSearchListData(parsedData);
+        setData(parsedData);
+      }
   }
 
   function handleFilterLoginData() {
-    // Filter results inside data, save with setSearchListData
+    // Filtra os resultados dentro dos dados, salve com setSearchListData
+    // para cada dado(data) se cada dado do service inclui o tempo searchText
+    const filteredData = searchListData.filter(data => {
+      // para que mesmo q coloque em baixa alta, ele ache o nome inferido
+      const isValid = data.service_name.toLowerCase()
+      .includes(searchText.toLowerCase());
+
+      if (isValid){
+        return data;
+      }
+    });
+
+    setSearchListData(filteredData)
   }
 
   function handleChangeInputText(text: string) {
     // Update searchText value
+    // para apagar todos os registro quando nao tiver nenhuma letra na pesquisa
+    if(!text) {
+      setSearchListData(data);
+    }
+    // receber o texto do input e salvar no estado do setSearchText
+    setSearchText(text)
+    
   }
 
   useFocusEffect(useCallback(() => {
